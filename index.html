@@ -186,6 +186,43 @@ function doFCFS(requests, start) {
     }
     return [sequence, totalSeek];
 }
+// SSTF
+function doSSTF(requests, start) {
+    let pending = [];
+    for(let i = 0; i < requests.length; i++) {
+        pending.push(requests[i]);
+    }
+    
+    let sequence = [start];
+    let totalSeek = 0;
+    let current = start;
+    
+    while(pending.length > 0) {
+        let best = pending[0];
+        let minDist = Math.abs(current - best);
+        
+        for(let i = 1; i < pending.length; i++) {
+            let dist = Math.abs(current - pending[i]);
+            if(dist < minDist) {
+                minDist = dist;
+                best = pending[i];
+            }
+        }
+        
+        totalSeek = totalSeek + minDist;
+        current = best;
+        sequence.push(current);
+        
+        // remove used request
+        for(let i = 0; i < pending.length; i++) {
+            if(pending[i] === best) {
+                pending.splice(i, 1);
+                break;
+            }
+        }
+    }
+    return [sequence, totalSeek];
+}
 
 </script>
 </body>
