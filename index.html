@@ -1,3 +1,5 @@
+<!-- Final version of project  -->
+<!-- OS Disk Scheduling Simulator Project -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -434,6 +436,77 @@ function createMainChart() {
             scales: { y: { min: 0, max: maxDisk } }
         }
     });
+}
+function runAnimation() {
+    if(animationTimer) clearInterval(animationTimer);
+    
+    let maxSteps = 0;
+    for(let key in allResults) {
+        if(allResults[key][0].length > maxSteps) maxSteps = allResults[key][0].length;
+    }
+    
+    animationTimer = setInterval(function() {
+        if(currentStep >= maxSteps) {
+            clearInterval(animationTimer);
+            return;
+        }
+        
+        mainChart.data.labels.push(currentStep);
+        
+        let algoNames = ["FCFS", "SSTF", "SCAN", "CSCAN"];
+        for(let i = 0; i < algoNames.length; i++) {
+            let seq = allResults[algoNames[i]][0];
+            if(currentStep < seq.length) {
+                mainChart.data.datasets[i].data.push(seq[currentStep]);
+            }
+        }
+        
+        mainChart.update('none');
+        currentStep++;
+    }, animationSpeed);
+}
+
+function pauseAnim() {
+    let btn = document.getElementById("pauseButton");
+    if(animationTimer) {
+        clearInterval(animationTimer);
+        animationTimer = null;
+        btn.innerText = "Resume";
+    } else {
+        runAnimation();
+        btn.innerText = "Pause Animation";
+    }
+}
+
+function resetSim() {
+    if(animationTimer) clearInterval(animationTimer);
+    if(mainChart) mainChart.destroy();
+    if(barChart) barChart.destroy();
+    
+    document.getElementById("output").innerHTML = "";
+    document.getElementById("ranking").innerHTML = "";
+    document.getElementById("fcfsVal").textContent = "—";
+    document.getElementById("sstfVal").textContent = "—";
+    document.getElementById("scanVal").textContent = "—";
+    document.getElementById("cscanVal").textContent = "—";
+    
+    currentStep = 0;
+}
+
+function randomInput() {
+    let count = Math.floor(Math.random() * 6) + 5;
+    let reqs = [];
+    for(let i = 0; i < count; i++) {
+        reqs.push(Math.floor(Math.random() * 180) + 10);
+    }
+    document.getElementById("requests").value = reqs.join(",");
+    document.getElementById("head").value = Math.floor(Math.random() * 150) + 20;
+    startSim();
+}
+
+function changeSpeed(val) {
+    animationSpeed = parseInt(val);
+    document.getElementById("speedShow").textContent = val;
 }
 
 </script>
