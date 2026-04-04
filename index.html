@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiskForge Pro - Disk Scheduling Simulator</title>
+    </head>
+<body>
+
+<header>
+    DiskForge Pro - Disk Scheduling Simulator
+</header>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Simulation Controls</h3>
+        
+        <label>Request Queue</label>
+        <input id="requests" type="text" value="98,183,37,122,14,124,65,67">
+
+        <label>Initial Head Position</label>
+        <input id="head" type="number" value="53">
+
+        <label>Disk Size (Max Cylinder)</label>
+        <input id="diskSize" type="number" value="199">
+
+        <button class="run" onclick="startSim()">Start Simulation</button>
+        <button class="pause" id="pauseButton" onclick="pauseAnim()">Pause Animation</button>
+        <button class="reset" onclick="resetSim()">Reset All</button>
+        <button class="random" onclick="randomInput()">Random Requests</button>
+
+        <div style="margin-top:15px;">
+            <label>Animation Speed: <span id="speedShow">300</span> ms</label>
+            <input type="range" id="animSpeed" min="50" max="800" value="300" oninput="changeSpeed(this.value)">
+        </div>
+    </div>
+
+    <!-- Main Area -->
+    <div class="main">
+        <div class="cards">
+            <div class="card" id="fcfsCard" style="border-color:#22d3ee">
+                <h4>FCFS</h4>
+                <div id="fcfsVal" style="font-size:28px; font-weight:bold; color:#22d3ee">—</div>
+            </div>
+            <div class="card" id="sstfCard" style="border-color:#eab308">
+                <h4>SSTF</h4>
+                <div id="sstfVal" style="font-size:28px; font-weight:bold; color:#eab308">—</div>
+            </div>
+            <div class="card" id="scanCard" style="border-color:#22c55e">
+                <h4>SCAN</h4>
+                <div id="scanVal" style="font-size:28px; font-weight:bold; color:#22c55e">—</div>
+            </div>
+            <div class="card" id="cscanCard" style="border-color:#c026d3">
+                <h4>C-SCAN</h4>
+                <div id="cscanVal" style="font-size:28px; font-weight:bold; color:#c026d3">—</div>
+            </div>
+        </div>
+
+        <div class="canvas-box">
+            <h4>Head Movement Animation</h4>
+            <canvas id="chart"></canvas>
+        </div>
+
+        <div class="split">
+            <div>
+                <h4>Detailed Output</h4>
+                <div class="output" id="output"></div>
+            </div>
+            <div>
+                <h4>Ranking</h4>
+                <div class="ranking" id="ranking"></div>
+            </div>
+        </div>
+
+        <div class="canvas-box">
+            <h4>Algorithm Performance Comparison</h4>
+            <canvas id="compareChart"></canvas>
+        </div>
+    </div>
+</div>
+</body>
+</html>
