@@ -223,6 +223,43 @@ function doSSTF(requests, start) {
     }
     return [sequence, totalSeek];
 }
+// SCAN
+function doSCAN(requests, start, maxDisk) {
+    let sorted = [...requests].sort((a,b) => a-b);
+
+    let left = [];
+    let right = [];
+
+    for(let i = 0; i < sorted.length; i++) {
+        if(sorted[i] < start) left.push(sorted[i]);
+        else right.push(sorted[i]);
+    }
+
+    let sequence = [start];
+    let totalSeek = 0;
+    let current = start;
+
+    // 👉 go right first
+    for(let i = 0; i < right.length; i++) {
+        totalSeek += Math.abs(current - right[i]);
+        current = right[i];
+        sequence.push(current);
+    }
+
+    // 👉 go till END (IMPORTANT FIX)
+    totalSeek += Math.abs(current - maxDisk);
+    current = maxDisk;
+    sequence.push(current);
+
+    // 👉 then go left
+    for(let i = left.length - 1; i >= 0; i--) {
+        totalSeek += Math.abs(current - left[i]);
+        current = left[i];
+        sequence.push(current);
+    }
+
+    return [sequence, totalSeek];
+}
 
 </script>
 </body>
