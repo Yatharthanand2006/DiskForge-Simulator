@@ -58,6 +58,40 @@
         .pause { background: #eab308; color: black; }
         .reset { background: #ef4444; color: white; }
         .random { background: #64748b; color: white; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .card {
+            background: #1e2937;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 5px solid;
+        }
+        .canvas-box {
+            background: #1e2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #chart { height: 200px !important; }
+        #compareChart { height: 150px !important; }
+
+        .output, .ranking {
+            background: #1e2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            
+        }
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
         </style>
 <body>
 
