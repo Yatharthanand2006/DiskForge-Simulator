@@ -260,6 +260,48 @@ function doSCAN(requests, start, maxDisk) {
 
     return [sequence, totalSeek];
 }
+// C-SCAN
+function doCSCAN(requests, start, maxDisk) {
+    let sorted = [...requests].sort((a,b) => a-b);
+
+    let left = [];
+    let right = [];
+
+    for(let i = 0; i < sorted.length; i++) {
+        if(sorted[i] < start) left.push(sorted[i]);
+        else right.push(sorted[i]);
+    }
+
+    let sequence = [start];
+    let totalSeek = 0;
+    let current = start;
+
+    // 👉 go right
+    for(let i = 0; i < right.length; i++) {
+        totalSeek += Math.abs(current - right[i]);
+        current = right[i];
+        sequence.push(current);
+    }
+
+    // 👉 MUST go to end
+    totalSeek += Math.abs(current - maxDisk);
+    current = maxDisk;
+    sequence.push(current);
+
+    // 👉 jump to 0
+    totalSeek += Math.abs(current - 0);
+    current = 0;
+    sequence.push(current);
+
+    // 👉 process left
+    for(let i = 0; i < left.length; i++) {
+        totalSeek += Math.abs(current - left[i]);
+        current = left[i];
+        sequence.push(current);
+    }
+
+    return [sequence, totalSeek];
+}
 
 </script>
 </body>
