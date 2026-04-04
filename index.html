@@ -302,6 +302,139 @@ function doCSCAN(requests, start, maxDisk) {
 
     return [sequence, totalSeek];
 }
+// Global variables
+let mainChart, barChart, animationTimer = null;
+let currentStep = 0;
+let allResults = {};
+let animationSpeed = 300;
+
+// Start Simulation
+function startSim() {
+    let reqStr = document.getElementById("requests").value.trim();
+    let headPos = parseInt(document.getElementById("head").value) || 53;
+    let userDisk = parseInt(document.getElementById("diskSize").value);
+    
+    if(userDisk > 0) maxDisk = userDisk;
+    
+    if(reqStr === "") {
+        alert("Please enter request queue");
+        return;
+    }
+    if(reqStr.includes(",,") || reqStr.includes(" ")) {
+    alert("Invalid format! Use comma-separated numbers only");
+    return;
+    }
+    
+    let reqList = [];
+    let numbers = reqStr.split(",");
+    for(let i = 0; i < numbers.length; i++) {
+        let num = parseInt(numbers[i].trim());
+        if(!isNaN(num)) reqList.push(num);
+    }
+    
+    if(reqList.length === 0) {
+        alert("No valid requests");
+        return;
+    }
+    
+    allResults.FCFS = doFCFS(reqList, headPos);
+    allResults.SSTF = doSSTF(reqList, headPos);
+    allResults.SCAN = doSCAN(reqList, headPos, maxDisk);
+    allResults.CSCAN = doCSCAN(reqList, headPos, maxDisk);
+    
+    updateCardValues();
+    showDetailedOutput();
+    showRankingList();
+    createBarChart();
+    createMainChart();
+    
+    currentStep = 0;
+    runAnimation();
+}
+
+function updateCardValues() {
+    document.getElementById("fcfsVal").textContent = allResults.FCFS[1];
+    document.getElementById("sstfVal").textContent = allResults.SSTF[1];
+    document.getElementById("scanVal").textContent = allResults.SCAN[1];
+    document.getElementById("cscanVal").textContent = allResults.CSCAN[1];
+}
+
+function showDetailedOutput() {
+    let html = "";
+    let colorList = {
+        FCFS: "#22d3ee",
+        SSTF: "#eab308",
+        SCAN: "#22c55e",
+        CSCAN: "#c026d3"
+    };
+    
+    for(let name in allResults) {
+        let seq = allResults[name][0];
+        let total = allResults[name][1];
+        let moves = seq.length - 1;
+        let avg = moves > 0 ? (total / moves).toFixed(2) : "0";
+        
+        html += `
+            <div style="margin:15px 0; padding:10px; background:#334155; border-left:5px solid ${colorList[name]};">
+                <b>${name}</b><br>
+                ${seq.join(" → ")}<br>
+                Total Seek = ${total} ms<br>
+                Avg Seek = ${avg} ms
+            </div>`;
+    }
+    document.getElementById("output").innerHTML = html;
+}
+
+function showRankingList() {
+    let list = [];
+    for(let name in allResults) {
+        list.push([name, allResults[name][1]]);
+    }
+    list.sort(function(a,b){ return a[1] - b[1]; });
+    let bestAlgo = list[0][0];
+    
+    let html = "";
+    for(let i = 0; i < list.length; i++) {
+        html += `${i+1}. ${list[i][0]} → ${list[i][1]} ms<br>`;
+    }
+    document.getElementById("ranking").innerHTML = html;
+}
+
+function createBarChart() {
+    if(barChart) barChart.destroy();
+    let ctx = document.getElementById("compareChart").getContext("2d");
+    barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["FCFS", "SSTF", "SCAN", "C-SCAN"],
+            datasets: [{
+                label: 'Seek Time',
+                data: [allResults.FCFS[1], allResults.SSTF[1], allResults.SCAN[1], allResults.CSCAN[1]],
+                backgroundColor: ['#22d3ee', '#eab308', '#22c55e', '#c026d3']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function createMainChart() {
+    if(mainChart) mainChart.destroy();
+    let ctx = document.getElementById("chart").getContext("2d");
+    mainChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'FCFS',   borderColor: '#22d3ee', data: [] },
+            { label: 'SSTF',   borderColor: '#eab308', data: [] },
+            { label: 'SCAN',   borderColor: '#22c55e', data: [] },
+            { label: 'C-SCAN', borderColor: '#c026d3', data: [] }
+        ]},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { min: 0, max: maxDisk } }
+        }
+    });
+}
 
 </script>
 </body>
