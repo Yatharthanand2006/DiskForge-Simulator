@@ -167,5 +167,26 @@
         </div>
     </div>
 </div>
+<script>
+// Simple Disk Scheduling Simulator
+// OS Lab Project
+
+let maxDisk = 199;   // disk size
+
+// FCFS
+function doFCFS(requests, start) {
+    let sequence = [start];
+    let totalSeek = 0;
+    let current = start;
+    
+    for(let i = 0; i < requests.length; i++) {
+        totalSeek = totalSeek + Math.abs(current - requests[i]);
+        current = requests[i];
+        sequence.push(current);
+    }
+    return [sequence, totalSeek];
+}
+
+</script>
 </body>
 </html>
